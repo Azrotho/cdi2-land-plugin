@@ -4,6 +4,7 @@ import fr.citedesiles.coreplugin.CoreCDI;
 import fr.citedesiles.landplugin.config.PluginConfig;
 import fr.citedesiles.landplugin.listener.ChatListener;
 import fr.citedesiles.landplugin.listener.PlayerJoinListener;
+import fr.citedesiles.landplugin.util.TeamDisplayManager;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,6 +29,7 @@ public class LandPlugin extends JavaPlugin {
             try {
                 if (api.ping()) {
                     getLogger().info("Connecté à l'API CDI2 : " + apiUrl);
+                    TeamDisplayManager.orderTeamsInScoreboard(api, this);
                 }
             } catch (CoreCDI.ApiException e) {
                 getLogger().warning("Impossible de contacter l'API CDI2 : " + e.getMessage());
