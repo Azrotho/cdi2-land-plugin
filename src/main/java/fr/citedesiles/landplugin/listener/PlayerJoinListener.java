@@ -3,6 +3,7 @@ package fr.citedesiles.landplugin.listener;
 import fr.citedesiles.coreplugin.CoreCDI;
 import fr.citedesiles.landplugin.LandPlugin;
 import fr.citedesiles.landplugin.config.PluginConfig;
+import fr.citedesiles.landplugin.scoreboard.SidebarManager;
 import fr.citedesiles.landplugin.util.TeamDisplayManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -42,6 +43,12 @@ public class PlayerJoinListener implements Listener {
 
         // Mettre à jour l'affichage en jeu (Tab & Nametag)
         TeamDisplayManager.updateDisplay(player, api);
+
+        // Créer le scoreboard sidebar
+        SidebarManager sidebarManager = plugin.getSidebarManager();
+        if (sidebarManager != null) {
+            sidebarManager.createScoreboard(player);
+        }
 
         // Message de join asynchrone pour récupérer les données d'équipe
         if (api != null) {
@@ -106,5 +113,12 @@ public class PlayerJoinListener implements Listener {
 
         // Nettoyer du cache
         TeamDisplayManager.removeCachedTeam(player.getUniqueId());
+
+        // Nettoyer le scoreboard
+        LandPlugin plugin = JavaPlugin.getPlugin(LandPlugin.class);
+        SidebarManager sidebarManager = plugin.getSidebarManager();
+        if (sidebarManager != null) {
+            sidebarManager.removePlayer(player);
+        }
     }
 }

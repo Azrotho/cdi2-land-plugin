@@ -4,6 +4,7 @@ import fr.citedesiles.coreplugin.CoreCDI;
 import fr.citedesiles.landplugin.config.PluginConfig;
 import fr.citedesiles.landplugin.listener.ChatListener;
 import fr.citedesiles.landplugin.listener.PlayerJoinListener;
+import fr.citedesiles.landplugin.scoreboard.SidebarManager;
 import fr.citedesiles.landplugin.util.TeamDisplayManager;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,6 +13,7 @@ public class LandPlugin extends JavaPlugin {
 
     private PluginConfig config;
     private CoreCDI api;
+    private SidebarManager sidebarManager;
 
     @Override
     public void onEnable() {
@@ -30,6 +32,9 @@ public class LandPlugin extends JavaPlugin {
                 if (api.ping()) {
                     getLogger().info("Connecté à l'API CDI2 : " + apiUrl);
                     TeamDisplayManager.orderTeamsInScoreboard(api, this);
+                    sidebarManager = new SidebarManager(api, this, config.getSidebarTitle());
+                    sidebarManager.startFooterRotation();
+                    sidebarManager.startDataRefresh();
                 }
             } catch (CoreCDI.ApiException e) {
                 getLogger().warning("Impossible de contacter l'API CDI2 : " + e.getMessage());
@@ -56,5 +61,9 @@ public class LandPlugin extends JavaPlugin {
 
     public CoreCDI getApi() {
         return api;
+    }
+
+    public SidebarManager getSidebarManager() {
+        return sidebarManager;
     }
 }
