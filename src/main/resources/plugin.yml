@@ -3,3 +3,8 @@ version: 1.0.0
 main: fr.citedesiles.landplugin.LandPlugin
 api-version: '1.21'
 author: Azrotho
+
+commands:
+  corruption:
+    description: Gestion de la corruption
+    usage: /corruption <start|stop|pause|speed|spawnwarden>

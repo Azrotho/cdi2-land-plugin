@@ -1,9 +1,13 @@
 package fr.citedesiles.landplugin;
 
 import fr.citedesiles.coreplugin.CoreCDI;
+import fr.citedesiles.landplugin.command.CorruptionCommand;
 import fr.citedesiles.landplugin.config.PluginConfig;
+import fr.citedesiles.landplugin.corruption.CorruptionManager;
 import fr.citedesiles.landplugin.listener.ChatListener;
+import fr.citedesiles.landplugin.listener.CorruptionListener;
 import fr.citedesiles.landplugin.listener.PlayerJoinListener;
+import fr.citedesiles.landplugin.runnable.CorruptionRunnable;
 import fr.citedesiles.landplugin.scoreboard.SidebarManager;
 import fr.citedesiles.landplugin.util.TeamDisplayManager;
 
@@ -11,12 +15,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class LandPlugin extends JavaPlugin {
 
+    private static LandPlugin instance;
     private PluginConfig config;
     private CoreCDI api;
     private SidebarManager sidebarManager;
+    private CorruptionManager corruptionManager;
 
     @Override
     public void onEnable() {
+        instance = this;
+        corruptionManager = new CorruptionManager();
+
         // Charger la configuration
         config = new PluginConfig(this);
 
@@ -46,6 +55,15 @@ public class LandPlugin extends JavaPlugin {
         // Enregistrer les listeners
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(api, config), this);
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new CorruptionListener(), this);
+
+        // Enregistrer le runnable de corruption
+        new CorruptionRunnable().runTaskTimer(this, 0, 0);
+
+        // Enregistrer les commandes
+        if (getCommand("corruption") != null) {
+            getCommand("corruption").setExecutor(new CorruptionCommand());
+        }
 
         getLogger().info("LandPlugin activé !");
     }
@@ -53,6 +71,10 @@ public class LandPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("LandPlugin désactivé !");
+    }
+
+    public static LandPlugin getInstance() {
+        return instance;
     }
 
     public PluginConfig getPluginConfig() {
@@ -65,5 +87,9 @@ public class LandPlugin extends JavaPlugin {
 
     public SidebarManager getSidebarManager() {
         return sidebarManager;
+    }
+
+    public CorruptionManager getCorruptionManager() {
+        return corruptionManager;
     }
 }
