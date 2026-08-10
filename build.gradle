@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:26.1.2.build.63-stable'
-    implementation 'fr.citedesiles:cdi2-core-plugin:1.0.0'
+    implementation 'fr.citedesiles:cdi2-core-plugin:1.1.0'
 }
 
 java {

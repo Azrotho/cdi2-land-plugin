@@ -9,6 +9,8 @@ import fr.citedesiles.landplugin.listener.CorruptionListener;
 import fr.citedesiles.landplugin.listener.PlayerJoinListener;
 import fr.citedesiles.landplugin.runnable.CorruptionRunnable;
 import fr.citedesiles.landplugin.scoreboard.SidebarManager;
+import fr.citedesiles.landplugin.stats.StatBuffer;
+import fr.citedesiles.landplugin.stats.StatsListener;
 import fr.citedesiles.landplugin.util.TeamDisplayManager;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +22,7 @@ public class LandPlugin extends JavaPlugin {
     private CoreCDI api;
     private SidebarManager sidebarManager;
     private CorruptionManager corruptionManager;
+    private StatBuffer statBuffer;
 
     @Override
     public void onEnable() {
@@ -44,6 +47,11 @@ public class LandPlugin extends JavaPlugin {
                     sidebarManager = new SidebarManager(api, this, config.getSidebarTitle());
                     sidebarManager.startFooterRotation();
                     sidebarManager.startDataRefresh();
+
+                    // Initialiser le tracking de stats
+                    statBuffer = new StatBuffer(this, api);
+                    statBuffer.start();
+                    getServer().getPluginManager().registerEvents(new StatsListener(statBuffer), this);
                 }
             } catch (CoreCDI.ApiException e) {
                 getLogger().warning("Impossible de contacter l'API CDI2 : " + e.getMessage());
@@ -70,6 +78,9 @@ public class LandPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (statBuffer != null) {
+            statBuffer.stop();
+        }
         getLogger().info("LandPlugin désactivé !");
     }
 
@@ -91,5 +102,9 @@ public class LandPlugin extends JavaPlugin {
 
     public CorruptionManager getCorruptionManager() {
         return corruptionManager;
+    }
+
+    public StatBuffer getStatBuffer() {
+        return statBuffer;
     }
 }
